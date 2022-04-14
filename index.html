@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos Paypal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- Replace "test" with your own sandbox Business account app client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id=ARh8gOCKG0zCrWwalg2xxsnJH3ysG2hBL5OYLwe5hIterftg1twXeM4DRpJ18qoR02SaJXQcghOHB7XK&currency=MXN"></script>
+</head>
+<body>
+
+    <div class="container">
+      <div id="paypal-button-container"></div>
+    </div>
+
+    <script>
+      paypal.Buttons({
+        style: {
+            color: 'blue',
+            label: 'pay'
+        },
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: '100' // Can also reference a variable or function
+              }
+            }]
+          });
+        },
+        onCancel: (data) => {
+            alert("Pago cancelado");
+            console.log(data);
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(function(orderData) {
+            console.log(orderData);
+            const transaction = orderData.purchase_units[0].payments.captures[0];
+
+            if (transaction.status === 'COMPLETED') {
+                alert(`Transacción ${transaction.id} realizada de forma exitosa...`);
+            }
+          });
+        }
+      }).render('#paypal-button-container');
+    </script>
+</body>
+</html>
